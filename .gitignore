@@ -1,0 +1,7 @@
+# Respaldo de firmware V1.13: los .img grandes van a un GitHub Release, no al repo
+respaldos/v1.13-generico/*.img
+respaldos/*.zip
+*.zip
+*.log
+Thumbs.db
+desktop.ini
