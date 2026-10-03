@@ -62,10 +62,16 @@ pick "Enter fastboot"; the wipe cache/reset shown there is **not** needed.)
 
 ## Step 2 — flash
 
+> **Use YOUR active slot.** The `_b` in my first version of this guide was *my* slot. Deleting `product`/`system_ext` of the **inactive** slot frees nothing: the GSI is written to `system` of the **active** slot, so that's where room is needed. If you see `Resizing 'system_a' FAILED (Not enough space...)` your slot is `a` — the commands below pick it up automatically in `$SLOT` (on Windows `cmd`, replace `$SLOT` by `a` or `b` by hand). Check it with `fastboot getvar current-slot`.
+
 ```bash
+# 0. detect your ACTIVE slot (a or b): every product/system_ext command uses it
+SLOT=$(fastboot getvar current-slot 2>&1 | sed -n 's/^current-slot: *//p' | head -1)
+echo "active slot: $SLOT"
+
 # make room in super
-fastboot delete-logical-partition product_b
-fastboot delete-logical-partition system_ext_b     # only for big GSIs (~2GB)
+fastboot delete-logical-partition product_$SLOT
+fastboot delete-logical-partition system_ext_$SLOT     # only for big GSIs (~2GB)
 
 # the GSI
 fastboot flash system YOUR_GSI.img
@@ -77,10 +83,10 @@ fastboot flash vbmeta_a vbmeta_a.img               # from your V1.13 backup
 fastboot flash vbmeta_b vbmeta_b.img
 
 # recreate empty product and system_ext (for the fstab)
-fastboot create-logical-partition product_b 16777216
-fastboot flash product_b product_empty.img
-fastboot create-logical-partition system_ext_b 16777216
-fastboot flash system_ext_b product_empty.img
+fastboot create-logical-partition product_$SLOT 16777216
+fastboot flash product_$SLOT product_empty.img
+fastboot create-logical-partition system_ext_$SLOT 16777216
+fastboot flash system_ext_$SLOT product_empty.img
 
 # wipe and boot
 fastboot erase metadata
@@ -189,10 +195,16 @@ elegir "Enter fastboot"; el wipe cache/reset del video **no** hace falta.)
 
 ## Paso 2 — flashear
 
+> **Usa TU slot activo.** El `_b` de la primera versión de esta guía era *mi* slot. Borrar `product`/`system_ext` del slot **inactivo** no libera nada: el GSI se escribe en `system` del slot **activo**, ahí es donde hace falta sitio. Si ves `Resizing 'system_a' FAILED (Not enough space...)` tu slot es `a` — los comandos de abajo lo recogen solos en `$SLOT` (en `cmd` de Windows, cambia `$SLOT` por `a` o `b` a mano). Compruébalo con `fastboot getvar current-slot`.
+
 ```bash
+# 0. detecta tu slot ACTIVO (a o b): todos los comandos de product/system_ext lo usan
+SLOT=$(fastboot getvar current-slot 2>&1 | sed -n 's/^current-slot: *//p' | head -1)
+echo "slot activo: $SLOT"
+
 # hacer sitio en super
-fastboot delete-logical-partition product_b
-fastboot delete-logical-partition system_ext_b     # solo si el GSI es grande (~2GB)
+fastboot delete-logical-partition product_$SLOT
+fastboot delete-logical-partition system_ext_$SLOT     # solo si el GSI es grande (~2GB)
 
 # el GSI
 fastboot flash system TU_GSI.img
@@ -204,10 +216,10 @@ fastboot flash vbmeta_a vbmeta_a.img               # de tu respaldo V1.13
 fastboot flash vbmeta_b vbmeta_b.img
 
 # recrear product y system_ext vacios (para el fstab)
-fastboot create-logical-partition product_b 16777216
-fastboot flash product_b product_empty.img
-fastboot create-logical-partition system_ext_b 16777216
-fastboot flash system_ext_b product_empty.img
+fastboot create-logical-partition product_$SLOT 16777216
+fastboot flash product_$SLOT product_empty.img
+fastboot create-logical-partition system_ext_$SLOT 16777216
+fastboot flash system_ext_$SLOT product_empty.img
 
 # datos limpios y arrancar
 fastboot erase metadata
